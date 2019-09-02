@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">OCRTessDemo</string>
+
+    <string name="title_activity_scan">扫一扫设置</string>
+    <string name="close">关闭</string>
+    <string name="auto_scan_notification">将扫描内容放入框内，即可自动扫描</string>
+    <string name="notification">提示</string>
+    <string name="positive_button_confirm">确认</string>
+    <string name="could_not_read_qr_code_from_scanner">对不起，无法打开扫出的内容</string>
+    <string name="camera_not_found">未检测到相机</string>
+    <string name="is_chess_scanner">军旗判别</string>
+    <string name="is_play_voice">播放声音</string>
+    <string name="is_debug">调试模式</string>
+    <string name="is_open_flashlight">是否打开闪光灯 </string>
+    <string name="take_photos">识别</string>
+    <string name="recognize_result">识别结果</string>
+    <string name="image_view_desc">显示结果</string>
+    <string name="recognize_fail">无法识别</string>
+    <string name="recognizing">识别中...</string>
+    <string name="ocr_tesser">Tesser OCR</string>
+    <string name="ocr_baidu">Baidu OCR</string>
+    <string name="setting_ok">确定</string>
+    <string name="setting_cancel">取消</string>
+    <string name="setting_title">参数设置</string>
+    <string name="permission_allow">必须允许所需权限，否则功能无法使用</string>
+</resources>
