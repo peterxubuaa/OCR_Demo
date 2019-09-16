@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">BaiduAIDemo</string>
+
+    <string name="title_activity_scan">扫一扫设置</string>
+    <string name="auto_scan_notification">将扫描内容放入框内，即可自动扫描</string>
+    <string name="notification">提示</string>
+    <string name="positive_button_confirm">确认</string>
+    <string name="camera_not_found">未检测到相机</string>
+    <string name="is_chess_scanner">特殊用途:军旗判别棋子大小</string>
+    <string name="is_play_voice">播放声音</string>
+    <string name="is_speech_recognize">识别语音(声控)</string>
+    <string name="is_text_recognize">识别文字</string>
+    <string name="is_debug">调试模式</string>
+    <string name="is_open_flashlight">是否打开闪光灯 </string>
+    <string name="recognize">识别</string>
+    <string name="recognize_result">识别结果</string>
+    <string name="image_view_desc">显示结果</string>
+    <string name="recognize_fail">无法识别</string>
+    <string name="recognizing">识别中...</string>
+    <string name="ocr_tesser">Tesser OCR</string>
+    <string name="ocr_baidu">Baidu OCR</string>
+    <string name="setting_ok">确定</string>
+    <string name="setting_cancel">取消</string>
+    <string name="setting_title">参数设置</string>
+    <string name="permission_allow">必须允许所需权限，否则功能无法使用</string>
+    <string name="speech_controlling">语音识别中</string>
+    <string name="speech_help">
+        读书帮助：\n
+        1.需要打开识别文字和播放声音。\n
+        2.如果需要语音控制，需要打开识别声音。\n
+        2.1 讲出“开始”或“读书”表示开始识别图书并朗读。\n\n
+
+        军旗比较帮助:\n
+        当两人对战军旗，需要第三人做裁判。如果你找不到裁判，那该APP就可以帮助你们。
+        1.需要勾选该功能，同时打开识别文字和播放声音。\n
+        2.如果需要语音控制军旗比较棋子大小，需要打开识别声音。\n
+        2.1 讲出“开始”或“比较”表示触发比较棋子大小。\n
+        2.2 讲出“结束”表示退出本次识别。\n
+        2.3 讲出“关闭”表示退出语音控制。\n
+        3.比较的双方军旗需要并列平行放置。\n
+    </string>
+
+    <string name="ocr_debug">调试模式</string>
+    <string name="ocr_rotation">OCR图片旋转: </string>
+    <string name="ocr_rotation_0">0度</string>
+    <string name="ocr_rotation_90">90度</string>
+    <string name="ocr_rotation_180">180度</string>
+    <string name="ocr_rotation_270">270度</string>
+    <string name="ocr_notification">是否播放提示音</string>
+    <string name="ocr_flash">是否使用闪光灯</string>
+    <string name="ocr_detect_direction">是否检测图像朝向</string>
+    <string name="ocr_detect_language">OCR检测语言: </string>
+    <string name="ocr_detect_language_CHN_ENG">中英文</string>
+    <string name="ocr_detect_language_CHN">中文</string>
+    <string name="ocr_detect_language_ENG">英文</string>
+
+    <string name="speech_debug">调试模式</string>
+    <string name="speech_control">是否语音控制</string>
+    <string name="speech_vad_timeout">断句间隔时长(ms)</string>
+    <string name="speech_vad_timeout_0">开启长语音</string>
+    <string name="speech_vad_timeout_800">输入短语模型</string>
+    <string name="speech_vad_timeout_2000">输入长句模型</string>
+    <string name="speech_language_type">输入语言类型</string>
+    <string name="speech_language_type_mandarin">普通话</string>
+    <string name="speech_language_type_mandarin_punctuation">普通话(标点)</string>
+    <string name="speech_language_type_mandarin_far">普通话(远场)</string>
+    <string name="speech_language_type_english">英语</string>
+    <string name="speech_language_type_sichuanese">四川话</string>
+
+    <string name="tts_debug">调试模式</string>
+    <string name="tts_speaker_type">合成声音类别</string>
+    <string name="tts_speaker_type_female">标准女声</string>
+    <string name="tts_speaker_type_male">标准男声</string>
+    <string name="tts_speaker_type_male_feeling">情感男声</string>
+    <string name="tts_speaker_type_female_feeling">情感女声</string>
+    <string name="tts_speaker_type_boy_feeling">情感男童声</string>
+    <string name="tts_speaker_type_girl_feeling">情感女童声</string>
+    <string name="tts_speaker_volume">合成音量</string>
+    <string name="tts_speaker_speed">合成语速</string>
+    <string name="tts_speaker_pitch">合成语调</string>
+</resources>

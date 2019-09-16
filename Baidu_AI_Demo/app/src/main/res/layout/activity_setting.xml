@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:text="@string/setting_title"
+        />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!--baidu OCR settings-->
+            <include layout="@layout/ocr_setting"/>
+            <View android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#303F9F"/>
+
+            <!--baidu speech settings-->
+            <include layout="@layout/speech_setting"/>
+            <View android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#303F9F"/>
+
+            <!--baidu tts settings-->
+            <include layout="@layout/tts_setting"/>
+            <View android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#303F9F"/>
+
+            <!-- special function: military chess-->
+            <Switch
+                android:id="@+id/switch_chess"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@string/is_chess_scanner"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:layout_gravity="start"
+                />
+
+            <View android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#303F9F"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/speech_help"
+                android:layout_gravity="start"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/setting_cancel"
+                    style="?android:attr/buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:text="@string/setting_cancel"
+                    />
+
+                <Button
+                    android:id="@+id/setting_ok"
+                    style="?android:attr/buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:text="@string/setting_ok"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

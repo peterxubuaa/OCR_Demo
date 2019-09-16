@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--baidu tts-->
+    <Switch
+        android:id="@+id/voice_switch"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/is_play_voice"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="start"
+        />
+
+    <CheckBox
+        android:id="@+id/voice_checkbox_debug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:text="@string/tts_debug"
+        android:checked="false"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/tts_speaker_type"
+        />
+
+    <com.min.baiduai.demo.view.MultiLineRadioGroup
+        android:id="@+id/tts_speaker_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/tts_speaker_type_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_female"
+                />
+            <RadioButton
+                android:id="@+id/tts_speaker_type_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_male"
+                />
+            <RadioButton
+                android:id="@+id/tts_speaker_type_female_feeling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_female_feeling"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/tts_speaker_type_male_feeling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_male_feeling"
+                />
+            <RadioButton
+                android:id="@+id/tts_speaker_type_girl_feeling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_girl_feeling"
+                />
+            <RadioButton
+                android:id="@+id/tts_speaker_type_boy_feeling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/tts_speaker_type_boy_feeling"
+                />
+        </LinearLayout>
+    </com.min.baiduai.demo.view.MultiLineRadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/tts_speaker_volume"
+        />
+    <SeekBar android:id="@+id/tts_speaker_volume_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="10"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:maxHeight="10dp"
+        android:minHeight="10dp"
+        android:min="0"
+        android:max="15"
+        android:progress="5"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/tts_speaker_speed"
+        />
+    <SeekBar android:id="@+id/tts_speaker_speed_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:maxHeight="10dp"
+        android:minHeight="10dp"
+        android:min="0"
+        android:max="15"
+        android:progress="5"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/tts_speaker_pitch"
+        />
+    <SeekBar android:id="@+id/tts_speaker_pitch_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:maxHeight="10dp"
+        android:minHeight="10dp"
+        android:min="0"
+        android:max="15"
+        android:progress="5"/>
+
+</LinearLayout>

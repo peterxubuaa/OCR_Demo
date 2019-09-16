@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions>
+    <action intentName="actions.intent.PLAY_GAME">
+        <fulfillment
+            urlTemplate="intent:#Intent;package=com.min.baiduai.demo;action=android.intent.action.MAIN{;S.dropoff};end">
+        </fulfillment>
+    </action>
+</actions>

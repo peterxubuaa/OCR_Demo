@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<!--baidu OCR settings-->
+    <Switch
+        android:id="@+id/ocr_switch"
+        android:text="@string/is_text_recognize"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="54dp"
+        android:layout_gravity="start"
+        />
+
+        <CheckBox
+            android:id="@+id/ocr_checkbox_debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_debug"
+            android:checked="false"/>
+
+        <CheckBox
+            android:id="@+id/ocr_checkbox_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_notification"
+            android:checked="false"/>
+
+        <CheckBox
+            android:id="@+id/ocr_checkbox_flash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_flash"
+            android:checked="false"/>
+
+        <CheckBox
+            android:id="@+id/ocr_checkbox_detect_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_detect_direction"
+            android:checked="false"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_detect_language"
+                    />
+
+            <RadioGroup
+                android:id="@+id/ocr_detect_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <RadioButton
+                    android:id="@+id/ocr_detect_language_CHN_ENG"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_detect_language_CHN_ENG"
+                    />
+                <RadioButton
+                    android:id="@+id/ocr_detect_language_CHN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_detect_language_CHN"
+                    />
+                <RadioButton
+                    android:id="@+id/ocr_detect_language_ENG"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_detect_language_ENG"
+                    />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:text="@string/ocr_rotation"
+                />
+
+            <RadioGroup
+                android:id="@+id/ocr_rotation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <RadioButton
+                    android:id="@+id/ocr_rotation_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_rotation_0"
+                    />
+                <RadioButton
+                    android:id="@+id/ocr_rotation_90"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_rotation_90"
+                    />
+                <RadioButton
+                    android:id="@+id/ocr_rotation_180"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_rotation_180"
+                    />
+                <RadioButton
+                    android:id="@+id/ocr_rotation_270"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="@string/ocr_rotation_270"
+                    />
+            </RadioGroup>
+        </LinearLayout>
+</LinearLayout>
