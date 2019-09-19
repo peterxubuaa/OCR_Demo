@@ -7,11 +7,11 @@
 <!--baidu OCR settings-->
     <Switch
         android:id="@+id/ocr_switch"
-        android:text="@string/is_text_recognize"
+        android:text="@string/is_ocr"
         android:textStyle="bold"
         android:textSize="20sp"
         android:layout_width="wrap_content"
-        android:layout_height="54dp"
+        android:layout_height="50dp"
         android:layout_gravity="start"
         />
 
@@ -24,11 +24,28 @@
             android:checked="false"/>
 
         <CheckBox
+            android:id="@+id/ocr_checkbox_enhance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_enhance"
+            android:enabled="false"
+            android:checked="false"/>
+
+        <CheckBox
             android:id="@+id/ocr_checkbox_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="@string/ocr_notification"
+            android:checked="false"/>
+
+        <CheckBox
+            android:id="@+id/ocr_checkbox_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/ocr_progressbar"
             android:checked="false"/>
 
         <CheckBox
@@ -53,12 +70,13 @@
             android:orientation="horizontal">
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:text="@string/ocr_detect_language"
-                    />
+                android:id="@+id/ocr_detect_language_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:text="@string/ocr_detect_language"
+                />
 
             <RadioGroup
                 android:id="@+id/ocr_detect_language"
@@ -96,6 +114,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/ocr_rotation_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"

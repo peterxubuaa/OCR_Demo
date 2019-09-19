@@ -21,17 +21,17 @@ import androidx.core.content.ContextCompat;
 
 public final class ScannerFinderView extends RelativeLayout {
 
-    private static final int[] SCANNER_ALPHA = { 0, 64, 128, 192, 255, 192, 128, 64 };
-    private static final long ANIMATION_DELAY = 100L;
-    private static final int OPAQUE = 0xFF;
+    private final int[] SCANNER_ALPHA = { 0, 64, 128, 192, 255, 192, 128, 64 };
+    private final long ANIMATION_DELAY = 100L;
+    private final int OPAQUE = 0xFF;
 
-    private static final int MIN_FOCUS_BOX_WIDTH = 50;
-    private static final int MIN_FOCUS_BOX_HEIGHT = 50;
-    private static final int MIN_FOCUS_BOX_PAD = 10;
-    private static int MIN_FOCUS_BOX_TOP = 200;
-    private static int MAX_FOCUS_BOX_BOTTOM = 600;
+    private final int MIN_FOCUS_BOX_WIDTH = 50;
+    private final int MIN_FOCUS_BOX_HEIGHT = 50;
+//    private final int MIN_FOCUS_BOX_PAD = 10;
+    private int MIN_FOCUS_BOX_TOP = 200;
+    private int MAX_FOCUS_BOX_BOTTOM = 600;
 
-    private static Point ScrRes;
+    private Point mScreenResolution;
     private int mTop;
 
     private Paint mPaint;
@@ -45,10 +45,17 @@ public final class ScannerFinderView extends RelativeLayout {
     private int mAngleLength;
 
     private Rect mFrameRect; //绘制的Rect
-//    private Rect mRect; //返回的Rect
-    private Context mContext;
-    private Handler mHandler;
-    private int mOrientation;
+    private Handler mViewHandler;
+    private String mDrawText;
+
+    //记录连续点击次数
+    private int mClickCount = 0;
+    private Handler mClickHandler;
+    private IClickCallBack mClickCallBack = null;
+    public interface IClickCallBack {
+        void onOneClick();//点击一次的回调
+        void onDoubleClick();//连续点击两次的回调
+    }
 
     public ScannerFinderView(Context context) {
         this(context, null);
@@ -60,8 +67,7 @@ public final class ScannerFinderView extends RelativeLayout {
 
     public ScannerFinderView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
-        mHandler = new MyHandler(this);
+        mViewHandler = new ViewHandler(this);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mMaskColor = ContextCompat.getColor(context, R.color.finder_mask);
@@ -73,51 +79,54 @@ public final class ScannerFinderView extends RelativeLayout {
         mAngleThick = 8;
         mAngleLength = 40;
         mScannerAlpha = 0;
-        init();
+//        init();
+
+        mClickHandler = new Handler();
         setOnTouchListener(getTouchListener());
     }
 
-    public void setOrientation(int orientation) {
-        mOrientation = orientation;
+    public void setClickCallBack(IClickCallBack clickCallBack) {
+        mClickCallBack = clickCallBack;
     }
 
-    public void setTopBottomLimit(int topLimit, int bottomLimit) {
-        MIN_FOCUS_BOX_TOP = topLimit;
-        MAX_FOCUS_BOX_BOTTOM = ScrRes.y - bottomLimit;
+    public void setDrawText(String text) {
+        mDrawText = text;
     }
 
-    private void init() {
+    public void init(Point screenResolution, int topLimit, int bottomLimit, int orientation, boolean bMaxRect) {
         if (isInEditMode()) {
             return;
         }
         // 需要调用下面的方法才会执行onDraw方法
         setWillNotDraw(false);
 
-        if (mFrameRect == null) {
-            ScrRes = CommonTools.getDisplaySize(mContext);
+        mScreenResolution = screenResolution;
+        MIN_FOCUS_BOX_TOP = topLimit;
+        MAX_FOCUS_BOX_BOTTOM = bottomLimit;
 
-            int width = ScrRes.x - MIN_FOCUS_BOX_PAD * 2;
-            int height = ScrRes.y / (mOrientation == 0? 3 : 6);
+        resetFrameRect(bMaxRect);
+    }
 
-            width = width == 0
-                    ? MIN_FOCUS_BOX_WIDTH
-                    : width < MIN_FOCUS_BOX_WIDTH ? MIN_FOCUS_BOX_WIDTH : width;
+    public void resetFrameRect(boolean bMaxRect) {
+        int width = mScreenResolution.x;
+        int height = bMaxRect? (MAX_FOCUS_BOX_BOTTOM - MIN_FOCUS_BOX_TOP) : (MAX_FOCUS_BOX_BOTTOM - MIN_FOCUS_BOX_TOP) / 2;
 
-            height = height == 0
-                    ? MIN_FOCUS_BOX_HEIGHT
-                    : height < MIN_FOCUS_BOX_HEIGHT ? MIN_FOCUS_BOX_HEIGHT : height;
+        width = width == 0
+                ? MIN_FOCUS_BOX_WIDTH
+                : width < MIN_FOCUS_BOX_WIDTH ? MIN_FOCUS_BOX_WIDTH : width;
 
-            int left = (ScrRes.x - width) / 2;
-            int top = MIN_FOCUS_BOX_TOP;
-            mTop = top; //记录初始距离上方距离
+        height = height == 0
+                ? MIN_FOCUS_BOX_HEIGHT
+                : height < MIN_FOCUS_BOX_HEIGHT ? MIN_FOCUS_BOX_HEIGHT : height;
 
-            mFrameRect = new Rect(left, top, left + width, top + height);
-//            mRect = mFrameRect;
-        }
+        int left = (mScreenResolution.x - width) / 2;
+        int top = bMaxRect? MIN_FOCUS_BOX_TOP : (MAX_FOCUS_BOX_BOTTOM + MIN_FOCUS_BOX_TOP)/2 -  height / 2;
+        mTop = top; //记录初始距离上方距离
+
+        mFrameRect = new Rect(left, top, left + width, top + height);
     }
 
     public Rect getRect() {
-//        return new Rect(mFrameRect.left, mFrameRect.top - MIN_FOCUS_BOX_TOP, mFrameRect.right, mFrameRect.bottom);
         return mFrameRect;
     }
 
@@ -130,8 +139,8 @@ public final class ScannerFinderView extends RelativeLayout {
         if (frame == null) {
             return;
         }
-        int width = getWidth();//canvas.getWidth();
-        int height = getHeight();//canvas.getHeight();
+        int width = getWidth();
+        int height = getHeight();
 
         // 绘制焦点框外边的暗色背景
         mPaint.setColor(mMaskColor);
@@ -194,16 +203,15 @@ public final class ScannerFinderView extends RelativeLayout {
     }
 
     private void drawText(Canvas canvas, Rect rect) {
-        int margin = 40;
+        int margin = -30;//40
         mPaint.setColor(mTextColor);
-        mPaint.setTextSize(getResources().getDimension(R.dimen.text_size_13sp));
-        String text = getResources().getString(R.string.auto_scan_notification);
+        mPaint.setTextSize(getResources().getDimension(R.dimen.text_size_20sp));
         Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
         float fontTotalHeight = fontMetrics.bottom - fontMetrics.top;
         float offY = fontTotalHeight / 2 - fontMetrics.bottom;
         float newY = rect.bottom + margin + offY;
-        float left = (ScrRes.x - mPaint.getTextSize() * text.length()) / 2;
-        canvas.drawText(text, left, newY, mPaint);
+        float left = (mScreenResolution.x - mPaint.getTextSize() * mDrawText.length()) / 2;
+        canvas.drawText(mDrawText, left, newY, mPaint);
     }
 
     private void drawLaser(Canvas canvas, Rect rect) {
@@ -214,13 +222,13 @@ public final class ScannerFinderView extends RelativeLayout {
         int middle = rect.height() / 2 + rect.top;
         canvas.drawRect(rect.left + 2, middle - 1, rect.right - 1, middle + 2, mPaint);
 
-        mHandler.sendEmptyMessageDelayed(1, ANIMATION_DELAY);
+        mViewHandler.sendEmptyMessageDelayed(1, ANIMATION_DELAY);
     }
 
-    static class MyHandler extends Handler {
+    static class ViewHandler extends Handler {
         WeakReference<ScannerFinderView> mTheView;
 
-        MyHandler(ScannerFinderView view) {
+        ViewHandler(ScannerFinderView view) {
             mTheView = new WeakReference<>(view);
         }
 
@@ -235,12 +243,40 @@ public final class ScannerFinderView extends RelativeLayout {
         return new OnTouchListener() {
             int lastX = -1;
             int lastY = -1;
+            //双击间四百毫秒延时
+            final int TIMEOUT = 400; //ms
+            final int CLICK_OFFSET = 20;
+            int lastDownX = -1, lastUpX = -1;
+            int lastDownY = -1, lastUpY = -1;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 performClick();//???
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        if (null != mClickCallBack) {
+                            mClickCount++;
+                            lastDownX = (int) event.getX();
+                            lastDownY = (int) event.getY();
+                            mClickHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (1 == mClickCount) {
+                                        if (Math.abs(lastDownX - lastUpX) < CLICK_OFFSET && Math.abs(lastDownY - lastUpY) < CLICK_OFFSET) {
+                                            mClickCallBack.onOneClick();
+                                        }
+                                    } else if (2 == mClickCount) {
+                                        mClickCallBack.onDoubleClick();
+                                    }
+                                    //清空handler延时，并防内存泄漏
+                                    mClickHandler.removeCallbacksAndMessages(null);
+                                    //计数清零
+                                    mClickCount = 0;
+                                }
+                                //延时timeout后执行run方法中的代码
+                            }, TIMEOUT);
+                        }
+
                         lastX = -1;
                         lastY = -1;
                         return true;
@@ -307,10 +343,14 @@ public final class ScannerFinderView extends RelativeLayout {
                         lastY = currentY;
                         return true;
                     case MotionEvent.ACTION_UP:
+                        if (null != mClickCallBack) {
+                            lastUpX = (int) event.getX();
+                            lastUpY = (int) event.getY();
+                        }
+
                         //移除之前的刷新
-                        mHandler.removeMessages(1);
+                        mViewHandler.removeMessages(1);
                         //松手时对外更新
-//                        mRect = mFrameRect;
                         lastX = -1;
                         lastY = -1;
                         return true;
@@ -324,18 +364,18 @@ public final class ScannerFinderView extends RelativeLayout {
 
     private void updateBoxRect(int dW, int dH, boolean isUpward) {
 
-        int newWidth = (mFrameRect.width() + dW > ScrRes.x || mFrameRect.width() + dW < MIN_FOCUS_BOX_WIDTH)
+        int newWidth = (mFrameRect.width() + dW > mScreenResolution.x || mFrameRect.width() + dW < MIN_FOCUS_BOX_WIDTH)
                 ? 0 : mFrameRect.width() + dW;
 
         //限制扫描框最大高度不超过屏幕宽度
-        int newHeight = (mFrameRect.height() + dH > ScrRes.y || mFrameRect.height() + dH < MIN_FOCUS_BOX_HEIGHT)
+        int newHeight = (mFrameRect.height() + dH > mScreenResolution.y || mFrameRect.height() + dH < MIN_FOCUS_BOX_HEIGHT)
                 ? 0 : mFrameRect.height() + dH;
 
         if (newWidth < MIN_FOCUS_BOX_WIDTH || newHeight < MIN_FOCUS_BOX_HEIGHT){
             return;
         }
 
-        int leftOffset = (ScrRes.x - newWidth) / 2;
+        int leftOffset = (mScreenResolution.x - newWidth) / 2;
 
         if (isUpward){
             mTop -= dH;
@@ -348,7 +388,6 @@ public final class ScannerFinderView extends RelativeLayout {
             return;
         }
 
-//        if (topOffset + newHeight > MIN_FOCUS_BOX_TOP + ScrRes.x){
         if (topOffset + newHeight > MAX_FOCUS_BOX_BOTTOM){
             return;
         }
@@ -359,6 +398,6 @@ public final class ScannerFinderView extends RelativeLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mHandler.removeMessages(1);
+        mViewHandler.removeMessages(1);
     }
 }

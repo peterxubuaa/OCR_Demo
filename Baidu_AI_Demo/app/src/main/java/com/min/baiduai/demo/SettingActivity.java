@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -15,11 +16,16 @@ import com.min.baiduai.demo.view.MultiLineRadioGroup;
 
 public class SettingActivity extends Activity {
 
-    static class SettingResults {
+    static class SettingResults implements Cloneable {
         final static String PREF_SETTINGS = "pref_settings";
+        final static String PREF_FULL_SCREEN = "pref_full_screen";
+        final static String PREF_MAX_SCAN_RECT = "pref_max_scan_rect";
+
         final static String PREF_OCR = "pref_ocr";
         final static String PREF_OCR_DEBUG = "pref_ocr_debug";
+        final static String PREF_OCR_ENHANCE = "pref_ocr_enhance";
         final static String PREF_OCR_NOTIFICATION = "pref_ocr_notification";
+        final static String PREF_OCR_PROGRESSBAR = "pref_ocr_progressbar";
         final static String PREF_OCR_FLASH = "pref_ocr_flash";
         final static String PREF_OCR_DETECT_DIRECTION = "pref_ocr_detect_direction";
         final static String PREF_OCR_LANGUAGE_TYPE = "pref_ocr_language_TYPE";
@@ -40,9 +46,14 @@ public class SettingActivity extends Activity {
 
         final static String PREF_CHESS = "pref_chess";
 
+        boolean mFullScreenEnable;
+        boolean mMaxScanRect;
+
         boolean mOCREnable;
         boolean mOCREnable_Debug;
+        boolean mOCREnable_Enhance;
         boolean mOCREnable_Notification;
+        boolean mOCREnable_ProgressBar;
         boolean mOCREnable_Flash;
         boolean mOCREnable_DetectDirection;
         String mOCREnable_LanguageType;
@@ -62,12 +73,16 @@ public class SettingActivity extends Activity {
         int mVoiceEnable_Pitch;
 
         boolean mChessEnable;
-//        boolean mDebugEnable;
 
         SettingResults() {
+            mFullScreenEnable = true;
+            mMaxScanRect = true;
+
             mOCREnable = true;
             mOCREnable_Debug = false;
-            mOCREnable_Notification = false;
+            mOCREnable_Enhance = false;
+            mOCREnable_Notification = true;
+            mOCREnable_ProgressBar = false;
             mOCREnable_Flash = false;
             mOCREnable_DetectDirection = true;
             mOCREnable_LanguageType = GeneralBasicParams.CHINESE_ENGLISH;
@@ -75,7 +90,7 @@ public class SettingActivity extends Activity {
 
             mSpeechEnable = false;
             mSpeechEnable_Debug = false;
-            mSpeechEnable_Control = false;
+            mSpeechEnable_Control = true;
             mSpeechEnable_VADTimeout = 0;
             mSpeechEnable_LanguageID = 1536;
 
@@ -88,6 +103,17 @@ public class SettingActivity extends Activity {
 
             mChessEnable = false;
         }
+
+        @Override
+        public Object clone() {
+            SettingResults settingResults = null;
+            try{
+                settingResults = (SettingResults)super.clone();
+            }catch(CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            return settingResults;
+        }
     }
 
     public static SettingResults getSettingResults(Context ctx) {
@@ -95,9 +121,14 @@ public class SettingActivity extends Activity {
 
         SharedPreferences settingPrefs = ctx.getSharedPreferences(SettingResults.PREF_SETTINGS, Context.MODE_PRIVATE);
 
+        settingResults.mFullScreenEnable = settingPrefs.getBoolean(SettingResults.PREF_FULL_SCREEN, settingResults.mFullScreenEnable);
+        settingResults.mMaxScanRect = settingPrefs.getBoolean(SettingResults.PREF_MAX_SCAN_RECT, settingResults.mMaxScanRect);
+
         settingResults.mOCREnable = settingPrefs.getBoolean(SettingResults.PREF_OCR, settingResults.mOCREnable);
         settingResults.mOCREnable_Debug = settingPrefs.getBoolean(SettingResults.PREF_OCR_DEBUG, settingResults.mOCREnable_Debug);
+        settingResults.mOCREnable_Enhance = settingPrefs.getBoolean(SettingResults.PREF_OCR_ENHANCE, settingResults.mOCREnable_Enhance);
         settingResults.mOCREnable_Notification = settingPrefs.getBoolean(SettingResults.PREF_OCR_NOTIFICATION, settingResults.mOCREnable_Notification);
+        settingResults.mOCREnable_ProgressBar = settingPrefs.getBoolean(SettingResults.PREF_OCR_PROGRESSBAR, settingResults.mOCREnable_ProgressBar);
         settingResults.mOCREnable_Flash = settingPrefs.getBoolean(SettingResults.PREF_OCR_FLASH, settingResults.mOCREnable_Flash);
         settingResults.mOCREnable_DetectDirection = settingPrefs.getBoolean(SettingResults.PREF_OCR_DETECT_DIRECTION, settingResults.mOCREnable_DetectDirection);
         settingResults.mOCREnable_LanguageType = settingPrefs.getString(SettingResults.PREF_OCR_LANGUAGE_TYPE, settingResults.mOCREnable_LanguageType);
@@ -125,9 +156,14 @@ public class SettingActivity extends Activity {
         SharedPreferences settingPrefs = ctx.getSharedPreferences(SettingResults.PREF_SETTINGS, Context.MODE_PRIVATE);
         SharedPreferences.Editor settingEditor = settingPrefs.edit();
 
+        settingEditor.putBoolean(SettingResults.PREF_FULL_SCREEN, settingResults.mFullScreenEnable);
+        settingEditor.putBoolean(SettingResults.PREF_MAX_SCAN_RECT, settingResults.mMaxScanRect);
+
         settingEditor.putBoolean(SettingResults.PREF_OCR, settingResults.mOCREnable);
         settingEditor.putBoolean(SettingResults.PREF_OCR_DEBUG, settingResults.mOCREnable_Debug);
+        settingEditor.putBoolean(SettingResults.PREF_OCR_ENHANCE, settingResults.mOCREnable_Enhance);
         settingEditor.putBoolean(SettingResults.PREF_OCR_NOTIFICATION, settingResults.mOCREnable_Notification);
+        settingEditor.putBoolean(SettingResults.PREF_OCR_PROGRESSBAR, settingResults.mOCREnable_ProgressBar);
         settingEditor.putBoolean(SettingResults.PREF_OCR_FLASH, settingResults.mOCREnable_Flash);
         settingEditor.putBoolean(SettingResults.PREF_OCR_DETECT_DIRECTION, settingResults.mOCREnable_DetectDirection);
         settingEditor.putString(SettingResults.PREF_OCR_LANGUAGE_TYPE, settingResults.mOCREnable_LanguageType);
@@ -154,38 +190,53 @@ public class SettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-//        setTitle(getResources().getString(R.string.setting_title));
         SettingResults settingResults = getSettingResults(this);
+
+        ((Switch)findViewById(R.id.fullscreen_switch)).setChecked(settingResults.mFullScreenEnable);
+        ((Switch)findViewById(R.id.maxscanrect_switch)).setChecked(settingResults.mMaxScanRect);
+
+        setOcrEnable(settingResults.mOCREnable);
         ((Switch)findViewById(R.id.ocr_switch)).setChecked(settingResults.mOCREnable);
         ((CheckBox)findViewById(R.id.ocr_checkbox_debug)).setChecked(settingResults.mOCREnable_Debug);
+        ((CheckBox)findViewById(R.id.ocr_checkbox_enhance)).setChecked(settingResults.mOCREnable_Enhance);
         ((CheckBox)findViewById(R.id.ocr_checkbox_notification)).setChecked(settingResults.mOCREnable_Notification);
+        ((CheckBox)findViewById(R.id.ocr_checkbox_progressbar)).setChecked(settingResults.mOCREnable_ProgressBar);
         ((CheckBox)findViewById(R.id.ocr_checkbox_flash)).setChecked(settingResults.mOCREnable_Flash);
         ((CheckBox)findViewById(R.id.ocr_checkbox_detect_direction)).setChecked(settingResults.mOCREnable_DetectDirection);
         setBaiduOCR_LanguageType(settingResults.mOCREnable_LanguageType);
         setBaiduOCR_Rotation(settingResults.mOCREnable_Rotation);
 
+        setSpeechEnable(settingResults.mSpeechEnable);
         ((Switch)findViewById(R.id.speech_switch)).setChecked(settingResults.mSpeechEnable);
         ((CheckBox)findViewById(R.id.speech_checkbox_debug)).setChecked(settingResults.mSpeechEnable_Debug);
         ((CheckBox)findViewById(R.id.speech_checkbox_control)).setChecked(settingResults.mSpeechEnable_Control);
         setBaiduSpeech_VadTimeout(settingResults.mSpeechEnable_VADTimeout);
         setBaiduSpeech_LanguageID(settingResults.mSpeechEnable_LanguageID);
 
-        ((Switch)findViewById(R.id.voice_switch)).setChecked(settingResults.mVoiceEnable);
-        ((CheckBox)findViewById(R.id.voice_checkbox_debug)).setChecked(settingResults.mVoiceEnable_Debug);
+        setTTSEnable(settingResults.mVoiceEnable);
+        ((Switch)findViewById(R.id.tts_switch)).setChecked(settingResults.mVoiceEnable);
+        ((CheckBox)findViewById(R.id.tts_checkbox_debug)).setChecked(settingResults.mVoiceEnable_Debug);
         setBaiduTTS_Speaker(settingResults.mVoiceEnable_Speaker);
         setBaiduTTS_Volume(settingResults.mVoiceEnable_Volume);
         setBaiduTTS_Speed(settingResults.mVoiceEnable_Speed);
         setBaiduTTS_Pitch(settingResults.mVoiceEnable_Pitch);
 
-        ((Switch)findViewById(R.id.switch_chess)).setChecked(settingResults.mChessEnable);
+        ((Switch)findViewById(R.id.chess_switch)).setChecked(settingResults.mChessEnable);
+
+        switchGroup();
 
         findViewById(R.id.setting_ok).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SettingResults settingResults = new SettingResults();
+                settingResults.mFullScreenEnable= ((Switch)findViewById(R.id.fullscreen_switch)).isChecked();
+                settingResults.mMaxScanRect = ((Switch)findViewById(R.id.maxscanrect_switch)).isChecked();
+
                 settingResults.mOCREnable = ((Switch)findViewById(R.id.ocr_switch)).isChecked();
                 settingResults.mOCREnable_Debug = ((CheckBox)findViewById(R.id.ocr_checkbox_debug)).isChecked();
+                settingResults.mOCREnable_Enhance = ((CheckBox)findViewById(R.id.ocr_checkbox_enhance)).isChecked();
                 settingResults.mOCREnable_Notification = ((CheckBox)findViewById(R.id.ocr_checkbox_notification)).isChecked();
+                settingResults.mOCREnable_ProgressBar = ((CheckBox)findViewById(R.id.ocr_checkbox_progressbar)).isChecked();
                 settingResults.mOCREnable_Flash = ((CheckBox)findViewById(R.id.ocr_checkbox_flash)).isChecked();
                 settingResults.mOCREnable_DetectDirection = ((CheckBox)findViewById(R.id.ocr_checkbox_detect_direction)).isChecked();
                 settingResults.mOCREnable_LanguageType = getBaiduOCR_LanguageType();
@@ -197,15 +248,17 @@ public class SettingActivity extends Activity {
                 settingResults.mSpeechEnable_VADTimeout = getBaiduSpeech_VadTimeout();
                 settingResults.mSpeechEnable_LanguageID = getBaiduSpeech_LanguageID();
 
-                settingResults.mVoiceEnable = ((Switch)findViewById(R.id.voice_switch)).isChecked();
-                settingResults.mVoiceEnable_Debug = ((CheckBox)findViewById(R.id.voice_checkbox_debug)).isChecked();
+                settingResults.mVoiceEnable = ((Switch)findViewById(R.id.tts_switch)).isChecked();
+                settingResults.mVoiceEnable_Debug = ((CheckBox)findViewById(R.id.tts_checkbox_debug)).isChecked();
                 settingResults.mVoiceEnable_Speaker = getBaiduTTS_Speaker();
                 settingResults.mVoiceEnable_Volume = getBaiduTTS_Volume();
                 settingResults.mVoiceEnable_Speed = getBaiduTTS_Speed();
                 settingResults.mVoiceEnable_Pitch = getBaiduTTS_Pitch();
 
-                settingResults.mChessEnable = ((Switch)findViewById(R.id.switch_chess)).isChecked();
+                settingResults.mChessEnable = ((Switch)findViewById(R.id.chess_switch)).isChecked();
+
                 setSettingResults(SettingActivity.this, settingResults);
+
                 setResult(Activity.RESULT_OK, null);
                 finish();
             }
@@ -218,6 +271,104 @@ public class SettingActivity extends Activity {
                 finish();
             }
         });
+    }
+
+    private void setOcrEnable(boolean enable) {
+        findViewById(R.id.ocr_checkbox_debug).setEnabled(enable);
+        findViewById(R.id.ocr_checkbox_notification).setEnabled(enable);
+        findViewById(R.id.ocr_checkbox_progressbar).setEnabled(enable);
+        findViewById(R.id.ocr_checkbox_flash).setEnabled(enable);
+        findViewById(R.id.ocr_checkbox_detect_direction).setEnabled(enable);
+        findViewById(R.id.ocr_detect_language_title).setEnabled(enable);
+        findViewById(R.id.ocr_detect_language_CHN_ENG).setEnabled(enable);
+        findViewById(R.id.ocr_detect_language_CHN).setEnabled(enable);
+        findViewById(R.id.ocr_detect_language_ENG).setEnabled(enable);
+        findViewById(R.id.ocr_rotation_title).setEnabled(enable);
+        findViewById(R.id.ocr_rotation_0).setEnabled(enable);
+        findViewById(R.id.ocr_rotation_90).setEnabled(enable);
+        findViewById(R.id.ocr_rotation_180).setEnabled(enable);
+        findViewById(R.id.ocr_rotation_270).setEnabled(enable);
+    }
+
+    private void setSpeechEnable(boolean enable) {
+        findViewById(R.id.speech_checkbox_debug).setEnabled(enable);
+        findViewById(R.id.speech_vad_timeout_title).setEnabled(enable);
+        findViewById(R.id.speech_vad_timeout_0).setEnabled(enable);
+        findViewById(R.id.speech_vad_timeout_800).setEnabled(enable);
+        findViewById(R.id.speech_vad_timeout_2000).setEnabled(enable);
+        findViewById(R.id.speech_language_type_title).setEnabled(enable);
+        findViewById(R.id.speech_language_type_mandarin).setEnabled(enable);
+        findViewById(R.id.speech_language_type_mandarin_punctuation).setEnabled(enable);
+        findViewById(R.id.speech_language_type_mandarin_far).setEnabled(enable);
+        findViewById(R.id.speech_language_type_sichuanese).setEnabled(enable);
+        findViewById(R.id.speech_language_type_english).setEnabled(enable);
+    }
+
+    private void setTTSEnable(boolean enable) {
+        findViewById(R.id.tts_checkbox_debug).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_title).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_female).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_male).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_female_feeling).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_male_feeling).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_girl_feeling).setEnabled(enable);
+        findViewById(R.id.tts_speaker_type_boy_feeling).setEnabled(enable);
+        findViewById(R.id.tts_speaker_volume_seekbar_title).setEnabled(enable);
+        findViewById(R.id.tts_speaker_volume_seekbar).setEnabled(enable);
+        findViewById(R.id.tts_speaker_speed_seekbar_title).setEnabled(enable);
+        findViewById(R.id.tts_speaker_speed_seekbar).setEnabled(enable);
+        findViewById(R.id.tts_speaker_pitch_seekbar_title).setEnabled(enable);
+        findViewById(R.id.tts_speaker_pitch_seekbar).setEnabled(enable);
+    }
+
+    private void switchGroup() {
+        ((Switch)findViewById(R.id.ocr_switch)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        setOcrEnable(isChecked);
+                    }
+            });
+        ((CheckBox)findViewById(R.id.ocr_checkbox_debug)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            findViewById(R.id.ocr_checkbox_enhance).setEnabled(true);
+                        } else {
+                            findViewById(R.id.ocr_checkbox_enhance).setEnabled(false);
+                            ((CheckBox) findViewById(R.id.ocr_checkbox_enhance)).setChecked(false);
+                        }
+                    }
+                });
+
+        ((Switch)findViewById(R.id.speech_switch)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        setSpeechEnable(isChecked);
+                    }
+                });
+        ((CheckBox)findViewById(R.id.speech_checkbox_debug)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            findViewById(R.id.speech_checkbox_control).setEnabled(true);
+                        } else {
+                            findViewById(R.id.speech_checkbox_control).setEnabled(false);
+                            ((CheckBox) findViewById(R.id.speech_checkbox_control)).setChecked(true);
+                        }
+                    }
+                });
+
+        ((Switch)findViewById(R.id.tts_switch)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        setTTSEnable(isChecked);
+                    }
+                });
     }
 
     private String getBaiduOCR_LanguageType() {

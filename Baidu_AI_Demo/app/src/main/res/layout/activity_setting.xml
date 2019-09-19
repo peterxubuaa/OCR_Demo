@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:gravity="center"
+        android:layout_alignParentTop="true"
         android:background="@android:color/black"
         android:textColor="@android:color/white"
         android:textSize="20sp"
@@ -15,13 +15,41 @@
         />
 
     <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:id="@+id/center_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_layout"
+        android:layout_marginTop="50dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/fullscreen_switch"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@string/is_full_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                />
+
+            <Switch
+                android:id="@+id/maxscanrect_switch"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@string/is_max_scan_rect"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                />
+
+            <View android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#303F9F"/>
 
             <!--baidu OCR settings-->
             <include layout="@layout/ocr_setting"/>
@@ -43,12 +71,12 @@
 
             <!-- special function: military chess-->
             <Switch
-                android:id="@+id/switch_chess"
+                android:id="@+id/chess_switch"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="@string/is_chess_scanner"
                 android:layout_width="wrap_content"
-                android:layout_height="54dp"
+                android:layout_height="50dp"
                 android:layout_gravity="start"
                 />
 
@@ -64,33 +92,36 @@
                 android:layout_gravity="start"
                 />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/setting_cancel"
-                    style="?android:attr/buttonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="20sp"
-                    android:text="@string/setting_cancel"
-                    />
-
-                <Button
-                    android:id="@+id/setting_ok"
-                    style="?android:attr/buttonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="20sp"
-                    android:text="@string/setting_ok"
-                    />
-            </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/setting_cancel"
+            style="?android:attr/buttonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:text="@string/setting_cancel"
+            />
+
+        <Button
+            android:id="@+id/setting_ok"
+            style="?android:attr/buttonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:text="@string/setting_ok"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

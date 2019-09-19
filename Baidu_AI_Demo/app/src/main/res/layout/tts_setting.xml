@@ -6,17 +6,17 @@
 
     <!--baidu tts-->
     <Switch
-        android:id="@+id/voice_switch"
+        android:id="@+id/tts_switch"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:text="@string/is_play_voice"
+        android:text="@string/is_tts"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_gravity="start"
         />
 
     <CheckBox
-        android:id="@+id/voice_checkbox_debug"
+        android:id="@+id/tts_checkbox_debug"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"
@@ -24,6 +24,7 @@
         android:checked="false"/>
 
     <TextView
+        android:id="@+id/tts_speaker_type_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
@@ -93,13 +94,15 @@
     </com.min.baiduai.demo.view.MultiLineRadioGroup>
 
     <TextView
+        android:id="@+id/tts_speaker_volume_seekbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="15sp"
         android:text="@string/tts_speaker_volume"
         />
-    <SeekBar android:id="@+id/tts_speaker_volume_seekbar"
+    <SeekBar
+        android:id="@+id/tts_speaker_volume_seekbar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="10"
@@ -112,13 +115,15 @@
         android:progress="5"/>
 
     <TextView
+        android:id="@+id/tts_speaker_speed_seekbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="15sp"
         android:text="@string/tts_speaker_speed"
         />
-    <SeekBar android:id="@+id/tts_speaker_speed_seekbar"
+    <SeekBar
+        android:id="@+id/tts_speaker_speed_seekbar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingStart="15dp"
@@ -130,13 +135,15 @@
         android:progress="5"/>
 
     <TextView
+        android:id="@+id/tts_speaker_pitch_seekbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="15sp"
         android:text="@string/tts_speaker_pitch"
         />
-    <SeekBar android:id="@+id/tts_speaker_pitch_seekbar"
+    <SeekBar
+        android:id="@+id/tts_speaker_pitch_seekbar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingStart="15dp"

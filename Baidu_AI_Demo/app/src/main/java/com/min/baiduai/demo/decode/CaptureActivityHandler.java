@@ -72,8 +72,9 @@ public final class CaptureActivityHandler extends Handler {
             mState = State.PREVIEW;
             CameraManager.get().requestPreviewFrame();
             CameraManager.get().requestAutoFocus(this, R.id.auto_focus);
-            if (flashEnable) CameraManager.get().setFlashLight(flashEnable);
-
+            if (!CameraManager.get().setFlashLight(flashEnable)){
+                Log.e(TAG, "Fail to set Flash light");
+            }
         }
     }
 

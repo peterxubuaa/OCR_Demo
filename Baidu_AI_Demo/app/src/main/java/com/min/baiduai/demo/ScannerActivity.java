@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,6 +17,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -98,7 +100,9 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
     private int mOrientation = 0;
     private boolean mAllApkPermission = false;
     private SettingActivity.SettingResults mSettingResults = null;
+    private SettingActivity.SettingResults mLastSettingResults = null;
     private int mWorkState = 0;
+    private PowerManager.WakeLock mWakeLock = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,13 +110,12 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
-//        Point pt1 = CommonTools.getScreenSize(this);
-//        Point pt2 = CommonTools.getDisplaySize(this);
         applyApkPermissions();
-
-        initView();
         //init setting params
         mSettingResults = SettingActivity.getSettingResults(this);
+
+        if (mSettingResults.mFullScreenEnable) resetFullScreen();
+        initView();
         //1. baidu ocr
         initBaiduOCR();
         //2. baidu speech
@@ -121,17 +124,55 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         initBaiduTTS();
     }
 
+    private void acquireWakeLock() {
+        PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "ReadBook:scanner");
+        if (null != mWakeLock) {
+            mWakeLock.acquire(10 * 60 * 1000);
+        }
+    }
+
+    private void releaseWakeLock() {
+        if (null != mWakeLock) {
+            mWakeLock.release();
+            mWakeLock = null;
+        }
+    }
+
+    private void resetFullScreen() {
+        //full screen
+        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+    }
+
+    private boolean isNotFullScreen() {
+        int uiFlags = getWindow().getDecorView().getSystemUiVisibility();
+        return ((uiFlags & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0);
+    }
+
     //ViewTreeObserver.OnGlobalLayoutListener
     @Override
     public void onGlobalLayout() {
         mSurfaceView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        mFinderView = findViewById(R.id.view_finder);
-        mFinderView.setOrientation(mOrientation);
-        int h1 = findViewById(R.id.header_bt).getHeight();
-        int h2 = CommonTools.getStatusBarHeight(this);
-        int h3 = findViewById(R.id.recognize_bt).getHeight();
-        int h4 = CommonTools.getNavigationBarHeight(this);
-        mFinderView.setTopBottomLimit(h1, h2 + h3 + h4);
+        int recognizeBtnHeight = mRecognizeButton.isShown()? mRecognizeButton.getHeight() : 0;
+        int statusBarHeight = 0;
+
+        Point screenResolution;
+        if (isNotFullScreen()) {
+            screenResolution = CommonTools.getDisplaySize(this);
+            statusBarHeight = CommonTools.getStatusBarHeight(this);
+        } else {
+            screenResolution = CommonTools.getScreenSize(this);
+        }
+        mFinderView.init(screenResolution, 0, screenResolution.y - (statusBarHeight + recognizeBtnHeight),
+                        mOrientation, mSettingResults.mMaxScanRect);
+        updateFinderViewText();
     }
 
     private void applyApkPermissions() {
@@ -197,30 +238,64 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         findViewById(R.id.header_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mLastSettingResults = (SettingActivity.SettingResults)mSettingResults.clone();
                 Intent intent = new Intent(ScannerActivity.this, SettingActivity.class);
                 startActivityForResult(intent, SETTING_REQUEST_CODE);
             }
         });
 
         mRecognizeButton = findViewById(R.id.recognize_bt);
-        resetRecognizeBTSize(mRecognizeButton);
-        mRecognizeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mSettingResults.mVoiceEnable) {
-                    if (stopTTSSpeak()) return;
-                }
-                if (mSettingResults.mSpeechEnable) {
-                    if (isBaiduSpeechRecognizeRunning()) {
-                        stopBaiduSpeechRecognize();
-                    } else {
-                        startBaiduSpeechRecognize();
+        if (!mSettingResults.mFullScreenEnable) {
+            resetRecognizeBTSize(mRecognizeButton);
+            mRecognizeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mSettingResults.mVoiceEnable) {
+                        if (stopTTSSpeak()) return;
                     }
-                } else if (mSettingResults.mOCREnable) {
-                    startBaiduOCR();
+                    if (mSettingResults.mSpeechEnable) {
+                        if (isBaiduSpeechRecognizeRunning()) {
+                            stopBaiduSpeechRecognize();
+                        } else {
+                            startBaiduSpeechRecognize();
+                        }
+                        updateFinderViewText();
+                    } else if (mSettingResults.mOCREnable) {
+                        startBaiduOCR();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            mRecognizeButton.setVisibility(View.GONE);
+        }
+
+        mFinderView = findViewById(R.id.view_finder);
+        if (mSettingResults.mFullScreenEnable) {
+            mFinderView.setClickCallBack(new ScannerFinderView.IClickCallBack() {
+                @Override
+                public void onOneClick() {
+//                    if (isNotFullScreen()) resetFullScreen();
+                    if (mSettingResults.mVoiceEnable) {
+                        if (stopTTSSpeak()) return;
+                    }
+                    if (!mSettingResults.mSpeechEnable && mSettingResults.mOCREnable) {
+                        startBaiduOCR();
+                    }
+                }
+
+                @Override
+                public void onDoubleClick() {
+                    if (mSettingResults.mSpeechEnable) {
+                        if (isBaiduSpeechRecognizeRunning()) {
+                            stopBaiduSpeechRecognize();
+                        } else {
+                            startBaiduSpeechRecognize();
+                        }
+                        updateFinderViewText();
+                    }
+                }
+            });
+        }
 
         mAlertDialog = new AlertDialog.Builder(this).create();
         mAlertDialog.setCancelable(true);
@@ -236,6 +311,9 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             @Override
             public void onDismiss(DialogInterface dialog) {
                 restartPreview();
+                if (mSettingResults.mFullScreenEnable) {
+                    if (isNotFullScreen()) resetFullScreen();
+                }
             }
         });
 
@@ -246,6 +324,12 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             @Override
             public void onDismiss(DialogInterface dialog) {
                 restartPreview();
+                if (mSettingResults.mFullScreenEnable) {
+                    if (isNotFullScreen()) resetFullScreen();
+                }
+                if ((mWorkState & OCR_START_STOP_MASK) > 0) mWorkState &= ~OCR_START_STOP_MASK;
+                if ((mWorkState & TTS_START_STOP_MASK) > 0) mWorkState &= ~TTS_START_STOP_MASK;
+                updateRecognizeButton();
             }
         });
     }
@@ -255,13 +339,13 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
 //        float testSize = scrRes.x / 10;
 //        bt.setTextSize(testSize);
         ViewGroup.LayoutParams params = bt.getLayoutParams();
-        params.width = scrRes.x;
-        params.height = scrRes.y / 5;
+        params.width = scrRes.x / 2;
+        params.height = scrRes.y / 8;
         bt.setLayoutParams(params);
     }
 
     public Rect getCropRect() {
-        return mFinderView.getRect();
+        return new Rect(mFinderView.getRect());
     }
 
     @Override
@@ -269,6 +353,12 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         super.onActivityResult(requestCode, resultCode, data);
         if (SETTING_REQUEST_CODE == requestCode && Activity.RESULT_OK == resultCode) {
             mSettingResults = SettingActivity.getSettingResults(this);
+            if (mSettingResults.mFullScreenEnable != mLastSettingResults.mFullScreenEnable) {
+                finish();
+            }
+            if (mSettingResults.mMaxScanRect != mLastSettingResults.mMaxScanRect) {
+                mFinderView.resetFrameRect(mSettingResults.mMaxScanRect);
+            }
             initBaiduOCRSettings();
             initBaiduSpeechSettings();
             initBaiduTTSSettings();
@@ -277,14 +367,13 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
 
     @Override
     protected void onResume() {
+        acquireWakeLock();
         super.onResume();
+        if (mSettingResults.mFullScreenEnable) resetFullScreen();
         if (mAllApkPermission) {
             if (mSettingResults.mOCREnable) {
                 CameraManager.init();
                 initCamera();
-            }
-            if (mSettingResults.mSpeechEnable) {
-//                startBaiduSpeechRecognize();
             }
         }
     }
@@ -315,9 +404,10 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         }
 
         if (mSettingResults.mVoiceEnable) {
-
+            stopTTSSpeak();
         }
         super.onPause();
+        releaseWakeLock();
     }
 
     @Override
@@ -326,6 +416,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         releaseBaiduOCR();
         releaseBaiduSpeech();
         releaseBaiduTTS();
+        releaseWakeLock();
     }
 
     private void initCamera() {
@@ -395,13 +486,19 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         if (null == data) return;
 
         mCaptureActivityHandler.onPause();
-        mBmp = BmpTools.getFocusedBitmap(this, camera, data, getCropRect(), mOrientation);
+        Point ScrRes;
+        if (mSettingResults.mFullScreenEnable) {
+            ScrRes = CommonTools.getScreenSize(this);
+        } else {
+            ScrRes = CommonTools.getDisplaySize(this);
+        }
+        mBmp = BmpTools.getFocusedBitmap(camera, data, ScrRes, getCropRect(), mOrientation);
 
         baiduOCRText(mBmp);
     }
 
     private void OCRSuccess(String result, Bitmap bitmap) {
-        String filterStr = "";
+        String filterStr;
         if (mSettingResults.mChessEnable) {
             filterStr = CommonTools.leftChineseCharacter(result);
             if (!TextUtils.isEmpty(filterStr)) {
@@ -483,13 +580,6 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         mProgressDialog.show();
     }
 
-//    private void cancelProgressDialog() {
-//        updateRecognizeButton(true);
-//        if (mProgressDialog.isShowing()) {
-//            mProgressDialog.dismiss();
-//        }
-//    }
-
     private void alertText(final String title, final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -522,10 +612,34 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         }
     }
 
+    private void updateFinderViewText() {
+        if (isNotFullScreen()) {
+            if (mSettingResults.mSpeechEnable) {
+                if ((mWorkState & SPEECH_START_STOP_MASK) > 0) {
+                    mFinderView.setDrawText(getResources().getString(R.string.speeching_scan_notification));
+                } else {
+                    mFinderView.setDrawText(getResources().getString(R.string.speech_scan_start_notification));
+                }
+            } else {
+                mFinderView.setDrawText(getResources().getString(R.string.scan_notification));
+            }
+        } else {
+            if (mSettingResults.mSpeechEnable) {
+                if ((mWorkState & SPEECH_START_STOP_MASK) > 0) {
+                    mFinderView.setDrawText(getResources().getString(R.string.speeching_scan_fullscreen_notification));
+                } else {
+                    mFinderView.setDrawText(getResources().getString(R.string.speech_scan_fullscreen_start_notification));
+                }
+            } else {
+                mFinderView.setDrawText(getResources().getString(R.string.scan_fullscreen_notification));
+            }
+        }
+    }
+
     private void dismissAllDialog() {
         if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
         if (mAlertDialog.isShowing()) mAlertDialog.dismiss();
-        if (mImageDialog.isShowing()) mImageDialog.dismiss();;
+        if (mImageDialog.isShowing()) mImageDialog.dismiss();
     }
 
     //1. baidu OCR
@@ -597,7 +711,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         if (mBaiduOCR_Notification) CommonTools.playRingtone(this);
         mWorkState |= OCR_START_STOP_MASK;
         updateRecognizeButton();
-        buildProgressDialog();
+        if (mSettingResults.mOCREnable_ProgressBar) buildProgressDialog();
         if (mSettingResults.mChessEnable) {
 //                playHintVoice("compare_start.m4a", 3000);
             if (mSettingResults.mVoiceEnable) startTTSSpeak("比较开始", 2000);
@@ -639,13 +753,18 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             param.setDetectDirection(mBaiduOCR_DetectDirection);
             param.setImageFile(outputFile);
 
-            RecognizeService.recGeneralBasic(this, param,
-                    new RecognizeService.ServiceListener() {
-                        @Override
-                        public void onResult(String result) {
-                            OCRResult(result);
-                        }
-                    });
+            RecognizeService.ServiceListener listener = new RecognizeService.ServiceListener() {
+                @Override
+                public void onResult(String result) {
+                    OCRResult(result);
+                }
+            };
+
+            if (mSettingResults.mOCREnable_Enhance) {
+                RecognizeService.recGeneralEnhanced(this, param, listener);
+            } else {
+                RecognizeService.recGeneralBasic(this, param, listener);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -786,6 +905,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             startBaiduSpeechRecognize();
         } else if ("关闭".equals(voiceCmd) || "退出".equals(voiceCmd)) {
             stopBaiduSpeechRecognize();
+            updateFinderViewText();
         }
     }
 

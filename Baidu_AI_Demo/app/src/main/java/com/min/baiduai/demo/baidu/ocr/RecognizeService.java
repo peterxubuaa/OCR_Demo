@@ -126,11 +126,8 @@ public class RecognizeService {
         });
     }
 
-    public static void recGeneralBasic(Context ctx, String filePath, final ServiceListener listener) {
-        GeneralBasicParams param = new GeneralBasicParams();
-        param.setDetectDirection(true);
-        param.setImageFile(new File(filePath));
-        OCR.getInstance(ctx).recognizeGeneralBasic(param, new OnResultListener<GeneralResult>() {
+    public static void recGeneralEnhanced(Context ctx, GeneralBasicParams param, final ServiceListener listener) {
+        OCR.getInstance(ctx).recognizeGeneralEnhanced(param, new OnResultListener<GeneralResult>() {
             @Override
             public void onResult(GeneralResult result) {
                 StringBuilder sb = new StringBuilder();
@@ -141,29 +138,6 @@ public class RecognizeService {
                 }
 //                listener.onResult(result.getJsonRes());
                 listener.onResult(sb.toString());
-            }
-
-            @Override
-            public void onError(OCRError error) {
-                listener.onResult(error.getMessage());
-            }
-        });
-    }
-
-    public static void recGeneralEnhanced(Context ctx, String filePath, final ServiceListener listener) {
-        GeneralBasicParams param = new GeneralBasicParams();
-        param.setDetectDirection(true);
-        param.setImageFile(new File(filePath));
-        OCR.getInstance(ctx).recognizeGeneralEnhanced(param, new OnResultListener<GeneralResult>() {
-            @Override
-            public void onResult(GeneralResult result) {
-                StringBuilder sb = new StringBuilder();
-                for (WordSimple wordSimple : result.getWordList()) {
-                    WordSimple word = wordSimple;
-                    sb.append(word.getWords());
-                    sb.append("\n");
-                }
-                listener.onResult(result.getJsonRes());
             }
 
             @Override

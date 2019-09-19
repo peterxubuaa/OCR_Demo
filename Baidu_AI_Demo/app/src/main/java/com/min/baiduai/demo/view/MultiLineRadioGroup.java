@@ -97,13 +97,13 @@ public class MultiLineRadioGroup extends LinearLayout {
         super.addView(child, index, params);
     }
 
-    /**
+    /*
      * get all radio buttons which are in the view
      *
      * @param child
      */
     private List<RadioButton> getAllRadioButton(View child) {
-        List<RadioButton> btns = new ArrayList<RadioButton>();
+        List<RadioButton> btns = new ArrayList<>();
         if (child instanceof RadioButton) {
             btns.add((RadioButton) child);
         } else if (child instanceof ViewGroup) {
@@ -150,12 +150,12 @@ public class MultiLineRadioGroup extends LinearLayout {
 
     private void setCheckedStateForView(int viewId, boolean checked) {
         View checkedView = findViewById(viewId);
-        if (checkedView != null && checkedView instanceof RadioButton) {
+        if (checkedView instanceof RadioButton) {
             ((RadioButton) checkedView).setChecked(checked);
         }
     }
 
-    /**
+    /*
      * <p>Returns the identifier of the selected radio button in this group.
      * Upon empty selection, the returned value is -1.</p>
      *
@@ -300,14 +300,14 @@ public class MultiLineRadioGroup extends LinearLayout {
      * radio button changed in this group.</p>
      */
     public interface OnCheckedChangeListener {
-        /**
+        /*
          * <p>Called when the checked radio button has changed. When the
          * selection is cleared, checkedId is -1.</p>
          *
          * @param group     the group in which the checked radio button has changed
          * @param checkedId the unique identifier of the newly checked radio button
          */
-        public void onCheckedChanged(MultiLineRadioGroup group, int checkedId);
+        void onCheckedChanged(MultiLineRadioGroup group, int checkedId);
     }
 
     private class CheckedStateTracker implements CompoundButton.OnCheckedChangeListener {

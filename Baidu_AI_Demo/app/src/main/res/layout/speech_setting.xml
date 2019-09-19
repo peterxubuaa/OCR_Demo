@@ -9,9 +9,9 @@
         android:id="@+id/speech_switch"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:text="@string/is_speech_recognize"
+        android:text="@string/is_speech"
         android:layout_width="wrap_content"
-        android:layout_height="54dp"
+        android:layout_height="50dp"
         android:layout_gravity="start"
         />
 
@@ -21,7 +21,8 @@
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:text="@string/speech_debug"
-        android:checked="false"/>
+        android:checked="false"
+        />
 
     <CheckBox
         android:id="@+id/speech_checkbox_control"
@@ -29,9 +30,12 @@
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:text="@string/speech_control"
-        android:checked="false"/>
+        android:enabled="false"
+        android:checked="true"
+        />
 
     <TextView
+        android:id="@+id/speech_vad_timeout_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
@@ -69,6 +73,7 @@
     </RadioGroup>
 
     <TextView
+        android:id="@+id/speech_language_type_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"

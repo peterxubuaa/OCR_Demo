@@ -1,6 +1,5 @@
 package com.min.baiduai.demo.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,7 +9,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 
-import com.min.baiduai.demo.camera.CameraConfigurationUtils;
+import com.min.baiduai.demo.camera.CameraConfigurationManager;
 
 public class BmpTools {
 
@@ -20,11 +19,11 @@ public class BmpTools {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    public static Bitmap preRotateBitmap(Bitmap source, float angle) {
+/*    public static Bitmap preRotateBitmap(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.preRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
-    }
+    }*/
 
     public enum ScalingLogic {
         CROP, FIT
@@ -114,19 +113,9 @@ public class BmpTools {
         return scaledBitmap;
     }
 
-    public static Bitmap getFocusedBitmap(Context context, Camera camera, byte[] data, Rect box, int orientation){
-        Point ScrRes = CommonTools.getDisplaySize(context);
-
-        /* 因为换成了竖屏显示，所以不替换屏幕宽高得出的预览图是变形的 */
-        Point screenResolutionForCamera = new Point();
-        if (90 == orientation || 270 == orientation) {
-            screenResolutionForCamera.x = ScrRes.y;
-            screenResolutionForCamera.y = ScrRes.x;
-        } else {
-            screenResolutionForCamera.x = ScrRes.x;
-            screenResolutionForCamera.y = ScrRes.y;
-        }
-        Point CamRes = CameraConfigurationUtils.findBestPreviewSizeValue(camera.getParameters(), screenResolutionForCamera);
+    public static Bitmap getFocusedBitmap(Camera camera, byte[] data, Point ScrRes,
+                                          Rect box, int orientation){
+        Point CamRes = CameraConfigurationManager.getCameraResolution();
 
         int SW = ScrRes.x;
         int SH = ScrRes.y;
@@ -142,16 +131,15 @@ public class BmpTools {
         float RSL = (float) (RL * Math.pow(SW, -1));
         float RST = (float) (RT * Math.pow(SH, -1));
 
-        float k = 0.5f;
-
         int CW = CamRes.x;
         int CH = CamRes.y;
+        float k = Math.min(CW, CH) > 4096? 0.5f : 1.0f;
 
         int X = (int) (k * CW);
         int Y = (int) (k * CH);
 
         Bitmap unscaledBitmap = decodeByteArray(data, X, Y, ScalingLogic.CROP);
-        Bitmap bmp = createScaledBitmap(unscaledBitmap, X, Y, ScalingLogic.CROP);
+        Bitmap bmp = createScaledBitmap(unscaledBitmap, X, Y, ScalingLogic.CROP);//key point
         unscaledBitmap.recycle();
 
         if (CW > CH ){

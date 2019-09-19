@@ -9,8 +9,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
 import android.view.WindowManager;
 
 import java.io.File;
@@ -24,7 +22,21 @@ public class CommonTools {
     private CommonTools() {
         throw new AssertionError();
     }
-/*
+
+    public static Point getDisplaySize(Context context) {
+        final Point point = new Point();
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(point);
+        return point;
+    }
+
+    public static Point getScreenSize(Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRealMetrics(dm);
+
+        return new Point(dm.widthPixels, dm.heightPixels);
+    }
+
+    /*
     // 获取屏幕宽度
     public static int getScreenWidth(Context ctx) {
         DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
@@ -36,22 +48,7 @@ public class CommonTools {
         DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
         return dm.heightPixels;
     }
-*/
 
-    public static Point getScreenSize(Context context) {
-        DisplayMetrics dm = new DisplayMetrics();
-        ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRealMetrics(dm);
-
-        return new Point(dm.widthPixels, dm.heightPixels);
-    }
-
-    public static Point getDisplaySize(Context context) {
-        final Point point = new Point();
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(point);
-        return point;
-    }
-
-/*
     public static synchronized void playVoice(Context context, String assertName) {
         try {
             MediaPlayer player = new MediaPlayer();
@@ -134,13 +131,14 @@ public class CommonTools {
 
     public static String createDirInAppFileDir(Context context, String dir) {
         String tmpDir = context.getFilesDir().toString() + "/" + dir;
-        if (!makeDirs(tmpDir)) {
-            tmpDir = context.getFilesDir().getAbsolutePath() + "/" + dir;
-            if (!makeDirs(dir)) {
-                throw new RuntimeException("create model resources dir failed :" + tmpDir);
-            }
+        if (makeDirs(tmpDir)) return tmpDir;
+
+        tmpDir = context.getFilesDir().getAbsolutePath() + "/" + dir;
+        if (makeDirs(dir)) {
+            return tmpDir;
+        } else {
+            throw new RuntimeException("create model resources dir failed :" + tmpDir);
         }
-        return tmpDir;
     }
 
     public static void copyFromAssets(AssetManager assets, String source, String dest)

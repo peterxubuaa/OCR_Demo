@@ -53,8 +53,6 @@ public class ImageDialog extends Dialog {
 
     @Override
     public void dismiss() {
-//        mBmp.recycle();
-//        mBmp = null;
         System.gc();
         super.dismiss();
     }

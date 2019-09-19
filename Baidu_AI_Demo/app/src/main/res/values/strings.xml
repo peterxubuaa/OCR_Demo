@@ -1,24 +1,23 @@
 <resources>
-    <string name="app_name">BaiduAIDemo</string>
+    <string name="app_name">ReadBook</string>
+    <string name="title_activity_scan">识别设置</string>
 
-    <string name="title_activity_scan">扫一扫设置</string>
-    <string name="auto_scan_notification">将扫描内容放入框内，即可自动扫描</string>
+    <string name="scan_notification">单击下方按钮扫描识别</string>
+    <string name="speech_scan_start_notification">单击下方按钮启动/关闭语音识别</string>
+    <string name="speeching_scan_notification">语音控制扫描识别中..</string>
+
+    <string name="scan_fullscreen_notification">单击屏幕扫描识别</string>
+    <string name="speech_scan_fullscreen_start_notification">双击屏幕启动/关闭语音识别</string>
+    <string name="speeching_scan_fullscreen_notification">语音控制扫描识别中..</string>
+
     <string name="notification">提示</string>
     <string name="positive_button_confirm">确认</string>
     <string name="camera_not_found">未检测到相机</string>
-    <string name="is_chess_scanner">特殊用途:军旗判别棋子大小</string>
-    <string name="is_play_voice">播放声音</string>
-    <string name="is_speech_recognize">识别语音(声控)</string>
-    <string name="is_text_recognize">识别文字</string>
-    <string name="is_debug">调试模式</string>
-    <string name="is_open_flashlight">是否打开闪光灯 </string>
     <string name="recognize">识别</string>
     <string name="recognize_result">识别结果</string>
     <string name="image_view_desc">显示结果</string>
     <string name="recognize_fail">无法识别</string>
-    <string name="recognizing">识别中...</string>
-    <string name="ocr_tesser">Tesser OCR</string>
-    <string name="ocr_baidu">Baidu OCR</string>
+    <string name="recognizing">识别中..</string>
     <string name="setting_ok">确定</string>
     <string name="setting_cancel">取消</string>
     <string name="setting_title">参数设置</string>
@@ -40,13 +39,20 @@
         3.比较的双方军旗需要并列平行放置。\n
     </string>
 
+    <string name="is_full_screen">是否全屏</string>
+    <string name="is_max_scan_rect">是否最大框扫描</string>
+    <string name="is_chess_scanner">特殊用途: 军旗判别棋子大小</string>
+
+    <string name="is_ocr">识别文字</string>
     <string name="ocr_debug">调试模式</string>
     <string name="ocr_rotation">OCR图片旋转: </string>
     <string name="ocr_rotation_0">0度</string>
     <string name="ocr_rotation_90">90度</string>
     <string name="ocr_rotation_180">180度</string>
     <string name="ocr_rotation_270">270度</string>
+    <string name="ocr_enhance">是否高精度模式</string>
     <string name="ocr_notification">是否播放提示音</string>
+    <string name="ocr_progressbar">是否显示进度框</string>
     <string name="ocr_flash">是否使用闪光灯</string>
     <string name="ocr_detect_direction">是否检测图像朝向</string>
     <string name="ocr_detect_language">OCR检测语言: </string>
@@ -54,6 +60,7 @@
     <string name="ocr_detect_language_CHN">中文</string>
     <string name="ocr_detect_language_ENG">英文</string>
 
+    <string name="is_speech">识别语音(声控)</string>
     <string name="speech_debug">调试模式</string>
     <string name="speech_control">是否语音控制</string>
     <string name="speech_vad_timeout">断句间隔时长(ms)</string>
@@ -67,6 +74,7 @@
     <string name="speech_language_type_english">英语</string>
     <string name="speech_language_type_sichuanese">四川话</string>
 
+    <string name="is_tts">播放声音</string>
     <string name="tts_debug">调试模式</string>
     <string name="tts_speaker_type">合成声音类别</string>
     <string name="tts_speaker_type_female">标准女声</string>
