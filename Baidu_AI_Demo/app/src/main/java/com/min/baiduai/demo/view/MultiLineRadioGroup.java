@@ -3,7 +3,6 @@ package com.min.baiduai.demo.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +60,7 @@ public class MultiLineRadioGroup extends LinearLayout {
     /**
      * set the default checked radio button, without notification the listeners
      */
-    public void setCheckWithoutNotif(int id) {
+    public void setCheckWithoutNotify(int id) {
         if (id != -1 && (id == mCheckedId)) {
             return;
         }
@@ -115,7 +114,7 @@ public class MultiLineRadioGroup extends LinearLayout {
         return btns;
     }
 
-    /**
+    /*
      * <p>Sets the selection to the radio button whose identifier is passed in
      * parameter. Using -1 as the selection identifier clears the selection;
      * such an operation is equivalent to invoking {@link #clearCheck()}.</p>
@@ -168,7 +167,7 @@ public class MultiLineRadioGroup extends LinearLayout {
         return mCheckedId;
     }
 
-    /**
+    /*
      * <p>Clears the selection. When the selection is cleared, no radio button
      * in this group is selected and {@link #getCheckedRadioButtonId()} returns
      * null.</p>
@@ -180,7 +179,7 @@ public class MultiLineRadioGroup extends LinearLayout {
         check(-1);
     }
 
-    /**
+    /*
      * <p>Register a callback to be invoked when the checked radio button
      * changes in this group.</p>
      *
@@ -235,21 +234,21 @@ public class MultiLineRadioGroup extends LinearLayout {
         /**
          * {@inheritDoc}
          */
-        public LayoutParams(Context c, AttributeSet attrs) {
+        LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);
         }
 
         /**
          * {@inheritDoc}
          */
-        public LayoutParams(int w, int h) {
+        LayoutParams(int w, int h) {
             super(w, h);
         }
 
         /**
          * {@inheritDoc}
          */
-        public LayoutParams(int w, int h, float initWeight) {
+        LayoutParams(int w, int h, float initWeight) {
             super(w, h, initWeight);
         }
 
@@ -348,7 +347,7 @@ public class MultiLineRadioGroup extends LinearLayout {
                     for (RadioButton btn : btns) {
                         int id = btn.getId();
                         // generates an id if it's missing
-                        if (id == View.NO_ID && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        if (id == View.NO_ID) {
                             id = View.generateViewId();
                             btn.setId(id);
                         }

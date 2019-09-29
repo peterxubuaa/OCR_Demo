@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.min.baiduai.demo.R;
-import com.min.baiduai.demo.utils.CommonTools;
 
 import java.lang.ref.WeakReference;
 
@@ -22,8 +21,6 @@ import androidx.core.content.ContextCompat;
 public final class ScannerFinderView extends RelativeLayout {
 
     private final int[] SCANNER_ALPHA = { 0, 64, 128, 192, 255, 192, 128, 64 };
-    private final long ANIMATION_DELAY = 100L;
-    private final int OPAQUE = 0xFF;
 
     private final int MIN_FOCUS_BOX_WIDTH = 50;
     private final int MIN_FOCUS_BOX_HEIGHT = 50;
@@ -47,6 +44,7 @@ public final class ScannerFinderView extends RelativeLayout {
     private Rect mFrameRect; //绘制的Rect
     private Handler mViewHandler;
     private String mDrawText;
+    private int mLaserPos;
 
     //记录连续点击次数
     private int mClickCount = 0;
@@ -79,6 +77,7 @@ public final class ScannerFinderView extends RelativeLayout {
         mAngleThick = 8;
         mAngleLength = 40;
         mScannerAlpha = 0;
+        mLaserPos = 0;
 //        init();
 
         mClickHandler = new Handler();
@@ -91,9 +90,10 @@ public final class ScannerFinderView extends RelativeLayout {
 
     public void setDrawText(String text) {
         mDrawText = text;
+        invalidate();
     }
 
-    public void init(Point screenResolution, int topLimit, int bottomLimit, int orientation, boolean bMaxRect) {
+    public void init(Point screenResolution, int topLimit, int bottomLimit, boolean bMaxRect) {
         if (isInEditMode()) {
             return;
         }
@@ -122,6 +122,7 @@ public final class ScannerFinderView extends RelativeLayout {
         int left = (mScreenResolution.x - width) / 2;
         int top = bMaxRect? MIN_FOCUS_BOX_TOP : (MAX_FOCUS_BOX_BOTTOM + MIN_FOCUS_BOX_TOP)/2 -  height / 2;
         mTop = top; //记录初始距离上方距离
+        mLaserPos = top;
 
         mFrameRect = new Rect(left, top, left + width, top + height);
     }
@@ -180,6 +181,8 @@ public final class ScannerFinderView extends RelativeLayout {
      *
      */
     private void drawAngle(Canvas canvas, Rect rect) {
+        final int OPAQUE = 0xFF;
+
         mPaint.setColor(mLaserColor);
         mPaint.setAlpha(OPAQUE);
         mPaint.setStyle(Paint.Style.FILL);
@@ -215,12 +218,18 @@ public final class ScannerFinderView extends RelativeLayout {
     }
 
     private void drawLaser(Canvas canvas, Rect rect) {
+        final long ANIMATION_DELAY = 25L;//100L;
+
         // 绘制焦点框内固定的一条扫描线
         mPaint.setColor(mLaserColor);
         mPaint.setAlpha(SCANNER_ALPHA[mScannerAlpha]);
         mScannerAlpha = (mScannerAlpha + 1) % SCANNER_ALPHA.length;
-        int middle = rect.height() / 2 + rect.top;
-        canvas.drawRect(rect.left + 2, middle - 1, rect.right - 1, middle + 2, mPaint);
+        if (mLaserPos > rect.bottom) {
+            mLaserPos = rect.top;
+        } else {
+            mLaserPos += 6;
+        }
+        canvas.drawRect(rect.left + 2, mLaserPos - 2, rect.right - 1, mLaserPos + 2, mPaint);
 
         mViewHandler.sendEmptyMessageDelayed(1, ANIMATION_DELAY);
     }
@@ -245,7 +254,7 @@ public final class ScannerFinderView extends RelativeLayout {
             int lastY = -1;
             //双击间四百毫秒延时
             final int TIMEOUT = 400; //ms
-            final int CLICK_OFFSET = 20;
+            final int CLICK_OFFSET = 100;
             int lastDownX = -1, lastUpX = -1;
             int lastDownY = -1, lastUpY = -1;
 

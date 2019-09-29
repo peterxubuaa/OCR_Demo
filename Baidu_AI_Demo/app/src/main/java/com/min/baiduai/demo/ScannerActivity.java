@@ -64,6 +64,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -171,7 +172,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             screenResolution = CommonTools.getScreenSize(this);
         }
         mFinderView.init(screenResolution, 0, screenResolution.y - (statusBarHeight + recognizeBtnHeight),
-                        mOrientation, mSettingResults.mMaxScanRect);
+                        mSettingResults.mMaxScanRect);
         updateFinderViewText();
     }
 
@@ -251,7 +252,12 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                 @Override
                 public void onClick(View v) {
                     if (mSettingResults.mVoiceEnable) {
-                        if (stopTTSSpeak()) return;
+                        if (stopTTSSpeak()) {
+                            if (mSettingResults.mSpeechEnable) {
+                                startBaiduSpeechRecognize();
+                            }
+                            return;
+                        }
                     }
                     if (mSettingResults.mSpeechEnable) {
                         if (isBaiduSpeechRecognizeRunning()) {
@@ -259,7 +265,6 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                         } else {
                             startBaiduSpeechRecognize();
                         }
-                        updateFinderViewText();
                     } else if (mSettingResults.mOCREnable) {
                         startBaiduOCR();
                     }
@@ -276,7 +281,12 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                 public void onOneClick() {
 //                    if (isNotFullScreen()) resetFullScreen();
                     if (mSettingResults.mVoiceEnable) {
-                        if (stopTTSSpeak()) return;
+                        if (stopTTSSpeak()) {
+                            if (mSettingResults.mSpeechEnable) {
+                                startBaiduSpeechRecognize();
+                            }
+                            return;
+                        }
                     }
                     if (!mSettingResults.mSpeechEnable && mSettingResults.mOCREnable) {
                         startBaiduOCR();
@@ -291,7 +301,6 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                         } else {
                             startBaiduSpeechRecognize();
                         }
-                        updateFinderViewText();
                     }
                 }
             });
@@ -330,6 +339,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                 if ((mWorkState & OCR_START_STOP_MASK) > 0) mWorkState &= ~OCR_START_STOP_MASK;
                 if ((mWorkState & TTS_START_STOP_MASK) > 0) mWorkState &= ~TTS_START_STOP_MASK;
                 updateRecognizeButton();
+                updateFinderViewText();
             }
         });
     }
@@ -506,7 +516,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             } else {
 //            playHintVoice("military_chess_voice/compare_fail.m4a", 3000);
                 if (mSettingResults.mVoiceEnable) {
-                    startTTSSpeak("比较失败,请重试", 2000);
+                    startTTSSpeak(getResources().getString(R.string.chess_compare_fail), 2000);
                 }
             }
         } else {
@@ -540,29 +550,29 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         switch (result) {
             case CompareRank.RANK_WIN:
 //                playHintVoice("military_chess_voice/left_win.m4a", 2000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("左边获胜", 1000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_left_win), 1000);
                 break;
             case CompareRank.RANK_DRAW:
 //                playHintVoice("military_chess_voice/both_dead.m4a", 2000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("双方同归于尽", 1000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_both_dead), 1000);
                 break;
             case CompareRank.RANK_LOSE:
 //                playHintVoice("military_chess_voice/right_win.m4a", 2000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("右边获胜", 1000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_right_win), 1000);
                 break;
             case CompareRank.GAME_WIN:
 //                playHintVoice("military_chess_voice/left_win.m4a", 2000);
 //                playHintVoice("military_chess_voice/game_over.m4a", 4000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("左边获胜,军旗被扛游戏结束", 2000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_left_win_game_over), 2000);
                 break;
             case CompareRank.GAME_LOSE:
 //                playHintVoice("military_chess_voice/right_win.m4a", 2000);
 //                playHintVoice("military_chess_voice/game_over.m4a", 4000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("右边获胜,军旗被扛游戏结束", 2000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_right_win_game_over), 2000);
                 break;
             case CompareRank.INVALID:
 //                playHintVoice("military_chess_voice/compare_fail.m4a", 4000);
-                if (mSettingResults.mVoiceEnable) startTTSSpeak("比较失败请重试", 2000);
+                if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_compare_fail), 2000);
                 break;
         }
     }
@@ -618,20 +628,36 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                 if ((mWorkState & SPEECH_START_STOP_MASK) > 0) {
                     mFinderView.setDrawText(getResources().getString(R.string.speeching_scan_notification));
                 } else {
-                    mFinderView.setDrawText(getResources().getString(R.string.speech_scan_start_notification));
+                    if ((mWorkState & TTS_START_STOP_MASK) > 0) {
+                        mFinderView.setDrawText(getResources().getString(R.string.speech_scan_read_exit_notification));
+                    } else {
+                        mFinderView.setDrawText(getResources().getString(R.string.speech_scan_start_notification));
+                    }
                 }
             } else {
-                mFinderView.setDrawText(getResources().getString(R.string.scan_notification));
+                if ((mWorkState & TTS_START_STOP_MASK) > 0) {
+                    mFinderView.setDrawText(getResources().getString(R.string.read_exit_notification));
+                } else {
+                    mFinderView.setDrawText(getResources().getString(R.string.scan_notification));
+                }
             }
         } else {
             if (mSettingResults.mSpeechEnable) {
                 if ((mWorkState & SPEECH_START_STOP_MASK) > 0) {
                     mFinderView.setDrawText(getResources().getString(R.string.speeching_scan_fullscreen_notification));
                 } else {
-                    mFinderView.setDrawText(getResources().getString(R.string.speech_scan_fullscreen_start_notification));
+                    if ((mWorkState & TTS_START_STOP_MASK) > 0) {
+                        mFinderView.setDrawText(getResources().getString(R.string.speech_scan_fullscreen_read_exit_notification));
+                    } else {
+                        mFinderView.setDrawText(getResources().getString(R.string.speech_scan_fullscreen_start_notification));
+                    }
                 }
             } else {
-                mFinderView.setDrawText(getResources().getString(R.string.scan_fullscreen_notification));
+                if ((mWorkState & TTS_START_STOP_MASK) > 0) {
+                    mFinderView.setDrawText(getResources().getString(R.string.scan_fullscreen_read_exit_notification));
+                } else {
+                    mFinderView.setDrawText(getResources().getString(R.string.scan_fullscreen_notification));
+                }
             }
         }
     }
@@ -683,7 +709,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             @Override
             public void onError(OCRError error) {
                 error.printStackTrace();
-                alertText("AK，SK方式获取OCR token失败", error.getMessage());
+//                alertText("AK，SK方式获取OCR token失败", error.getMessage());
             }
         }, getApplicationContext(), "13MaYeYFLEYqZt8K3yMe8CGN", "b3CGEBw4W0np2TWquO08GAh0Q8HXcIMV");
     }
@@ -702,7 +728,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
 
     private boolean checkTokenStatus() {
         if (!mBaiduOCR_HasToken) {
-            Toast.makeText(getApplicationContext(), "OCR token还未成功获取", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getResources().getText(R.string.ocr_token_warn), Toast.LENGTH_LONG).show();
         }
         return mBaiduOCR_HasToken;
     }
@@ -711,10 +737,11 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         if (mBaiduOCR_Notification) CommonTools.playRingtone(this);
         mWorkState |= OCR_START_STOP_MASK;
         updateRecognizeButton();
+        updateFinderViewText();
         if (mSettingResults.mOCREnable_ProgressBar) buildProgressDialog();
         if (mSettingResults.mChessEnable) {
 //                playHintVoice("compare_start.m4a", 3000);
-            if (mSettingResults.mVoiceEnable) startTTSSpeak("比较开始", 2000);
+            if (mSettingResults.mVoiceEnable) startTTSSpeak(getResources().getString(R.string.chess_compare_start), 2000);
         }
         CameraManager.get().takeShot(null, //设置为空关闭拍照提示音
                 null, ScannerActivity.this);
@@ -723,6 +750,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
     private void OCRResult(final String result) {
         mWorkState &= ~OCR_START_STOP_MASK;
         updateRecognizeButton();
+        updateFinderViewText();
 
         Message message = Message.obtain();
         message.what = ScannerActivity.RECOGNIZE_SUCCESS;
@@ -847,6 +875,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
         if (mBaiduSpeech_VADTimeout > 0) {
             mWorkState &= ~SPEECH_START_STOP_MASK;
             updateRecognizeButton();
+            updateFinderViewText();
         }
         Log.d(TAG, result + "\n");
         if (mSettingResults.mSpeechEnable_Debug) {
@@ -878,17 +907,21 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
 //            String json = "{\"accept-audio-data\":false,\"disable-punctuation\":false,\"accept-audio-volume\":false,\"vad.endpoint-timeout\":0}";
             mWorkState |= SPEECH_START_STOP_MASK;
             updateRecognizeButton();
+            updateFinderViewText();
             String param = json.toString();
             mBaiduSpeech_Recognizer.start(param);
         }
     }
 
     private void stopBaiduSpeechRecognize() {
-        mWorkState &= ~SPEECH_START_STOP_MASK;
-        updateRecognizeButton();
-        if (null == mBaiduSpeech_Recognizer) return;
+        if (isBaiduSpeechRecognizeRunning()) {
+            mWorkState &= ~SPEECH_START_STOP_MASK;
+            updateRecognizeButton();
+            updateFinderViewText();
+            if (null == mBaiduSpeech_Recognizer) return;
 
-        mBaiduSpeech_Recognizer.stop();
+            mBaiduSpeech_Recognizer.stop();
+        }
     }
 
     private boolean isBaiduSpeechRecognizeRunning() {
@@ -898,14 +931,18 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
     }
 
     private void voiceControl(String voiceCmd) {
-        if ("开始".equals(voiceCmd) || "读书".equals(voiceCmd) || "比较".equals(voiceCmd)) {
+        if (Arrays.asList(getResources().getStringArray(R.array.voice_control_cmd_start)).contains(voiceCmd)) {
             if (mSettingResults.mOCREnable) startBaiduOCR();
-        } else if ("结束".equals(voiceCmd)) {
+        } else if (Arrays.asList(getResources().getStringArray(R.array.voice_control_cmd_end)).contains(voiceCmd)) {
+            if (mSettingResults.mVoiceEnable) {
+                if (stopTTSSpeak()) {
+                    if (mSettingResults.mSpeechEnable) {
+                        startBaiduSpeechRecognize();
+                    }
+                }
+            }
+        } else if (Arrays.asList(getResources().getStringArray(R.array.voice_control_cmd_exit)).contains(voiceCmd)) {
             stopBaiduSpeechRecognize();
-            startBaiduSpeechRecognize();
-        } else if ("关闭".equals(voiceCmd) || "退出".equals(voiceCmd)) {
-            stopBaiduSpeechRecognize();
-            updateFinderViewText();
         }
     }
 
@@ -939,11 +976,19 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
                     break;
                 case UI_CHANGE_TTS_START:
                     mTheActivity.get().mWorkState |= TTS_START_STOP_MASK;
+                    if (mTheActivity.get().mSettingResults.mSpeechEnable) {
+                        mTheActivity.get().stopBaiduSpeechRecognize();
+                    }
                     mTheActivity.get().updateRecognizeButton();
+                    mTheActivity.get().updateFinderViewText();
                     break;
                 case UI_CHANGE_TTS_END:
                     mTheActivity.get().mWorkState &= ~TTS_START_STOP_MASK;
+                    if (mTheActivity.get().mSettingResults.mSpeechEnable) {
+                        mTheActivity.get().startBaiduSpeechRecognize();
+                    }
                     mTheActivity.get().updateRecognizeButton();
+                    mTheActivity.get().updateFinderViewText();
                     break;
             }
         }
@@ -1030,6 +1075,10 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
     private void startTTSSpeak(String ttsText, long delayMS) {
         // 需要合成的文本text的长度不能超过1024个GBK字节。
         if (!TextUtils.isEmpty(ttsText)) {
+            if (ttsText.getBytes().length >= 1024) {
+                Toast.makeText(getApplicationContext(), getResources().getText(R.string.tts_text_length_warn), Toast.LENGTH_LONG).show();
+                return;
+            }
             // 合成前可以修改参数：
             Map<String, String> params = getParams();
             mBaiduTTS_Synthesizer.setParams(params);
@@ -1043,6 +1092,7 @@ public class ScannerActivity extends Activity implements Callback, Camera.Pictur
             mBaiduTTS_Synthesizer.stop();
             mWorkState &= ~TTS_START_STOP_MASK;
             updateRecognizeButton();
+            updateFinderViewText();
             return true;
         } else {
             return false;

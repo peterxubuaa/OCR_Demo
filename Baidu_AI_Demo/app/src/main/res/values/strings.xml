@@ -3,10 +3,14 @@
     <string name="title_activity_scan">识别设置</string>
 
     <string name="scan_notification">单击下方按钮扫描识别</string>
+    <string name="read_exit_notification">单击下方按钮提前结束朗读</string>
     <string name="speech_scan_start_notification">单击下方按钮启动/关闭语音识别</string>
     <string name="speeching_scan_notification">语音控制扫描识别中..</string>
+    <string name="speech_scan_read_exit_notification">单击下方按钮提前结束朗读</string>
 
     <string name="scan_fullscreen_notification">单击屏幕扫描识别</string>
+    <string name="scan_fullscreen_read_exit_notification">单击屏幕提前结束朗读</string>
+    <string name="speech_scan_fullscreen_read_exit_notification">单击屏幕提前结束朗读</string>
     <string name="speech_scan_fullscreen_start_notification">双击屏幕启动/关闭语音识别</string>
     <string name="speeching_scan_fullscreen_notification">语音控制扫描识别中..</string>
 
@@ -59,6 +63,7 @@
     <string name="ocr_detect_language_CHN_ENG">中英文</string>
     <string name="ocr_detect_language_CHN">中文</string>
     <string name="ocr_detect_language_ENG">英文</string>
+    <string name="ocr_token_warn">OCR token还未成功获取</string>
 
     <string name="is_speech">识别语音(声控)</string>
     <string name="speech_debug">调试模式</string>
@@ -86,4 +91,26 @@
     <string name="tts_speaker_volume">合成音量</string>
     <string name="tts_speaker_speed">合成语速</string>
     <string name="tts_speaker_pitch">合成语调</string>
+    <string name="tts_text_length_warn">扫描识别朗读的文字过长，请重新扫描</string>
+
+    <string name="chess_compare_start">比较开始</string>
+    <string name="chess_compare_fail">比较失败,请重试</string>
+    <string name="chess_left_win">左边获胜</string>
+    <string name="chess_both_dead">双方同归于尽</string>
+    <string name="chess_right_win">右边获胜</string>
+    <string name="chess_left_win_game_over">左边获胜,军旗被扛游戏结束</string>
+    <string name="chess_right_win_game_over">右边获胜,军旗被扛游戏结束</string>
+
+    <array name="voice_control_cmd_start">
+        <item>开始</item>
+        <item>读书</item>
+        <item>比较</item>
+    </array>
+    <array name="voice_control_cmd_end">
+        <item>结束</item>
+    </array>
+    <array name="voice_control_cmd_exit">
+        <item>关闭</item>
+        <item>退出</item>
+    </array>
 </resources>

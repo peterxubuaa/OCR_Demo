@@ -96,9 +96,9 @@ public class SettingActivity extends Activity {
 
             mVoiceEnable = true;
             mVoiceEnable_Debug = false;
-            mVoiceEnable_Speaker = 0;
-            mVoiceEnable_Volume = 5;
-            mVoiceEnable_Speed = 5;
+            mVoiceEnable_Speaker = 5;
+            mVoiceEnable_Volume = 10;
+            mVoiceEnable_Speed = 4;
             mVoiceEnable_Pitch = 5;
 
             mChessEnable = false;
